@@ -3,7 +3,6 @@ package com.snake.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -17,13 +16,12 @@ public class Game extends ApplicationAdapter {
 	BitmapFont font;
 	SpriteBatch batch;
 	Random rand = new Random();
-	int timer = 0;
+	int timer, score, highScore = 0;
 	int appleX, appleY;
 	boolean add = false;
-
 	public static ArrayList<Snake> snake = new ArrayList<>();
 
-	void apple() {
+	public void apple() {
 		while (true) {
 			appleX = rand.nextInt(0, 39);
 			appleY = rand.nextInt(0, 39);
@@ -34,22 +32,27 @@ public class Game extends ApplicationAdapter {
 			}
 		}
 	}
-	void lose() {
+
+	public void lose() {
 		ScreenUtils.clear(Color.SCARLET);
+		score = 0;
 		snake.clear();
-		create();
+		setBoard();
+	}
+
+	public void setBoard() {
+		snake.add(new Snake(2, 20, 1));
+		snake.add(new Snake(1, 20, 1));
+		snake.add(new Snake(0, 20, 1));
+		apple();
 	}
 	
 	@Override
 	public void create () {
 		sr = new ShapeRenderer();
-		font = new BitmapFont(Gdx.files.internal("assets/font.fnt"),
-				Gdx.files.internal("assets/font.png"), false);
+		font = new BitmapFont(Gdx.files.internal("assets/font.fnt"), Gdx.files.internal("assets/font.png"), false);
 		batch = new SpriteBatch();
-		snake.add(new Snake(2, 20, 1));
-		snake.add(new Snake(1, 20, 1));
-		snake.add(new Snake(0, 20, 1));
-		apple();
+		setBoard();
 	}
 
 	@Override
@@ -61,6 +64,7 @@ public class Game extends ApplicationAdapter {
 		else if (Gdx.input.isKeyPressed(32)) snake.get(0).direction = 1;
 		else if (Gdx.input.isKeyPressed(47)) snake.get(0).direction = 2;
 		else if (Gdx.input.isKeyPressed(29)) snake.get(0).direction = 3;
+
 		// input arrows
 		if (Gdx.input.isKeyPressed(19)) snake.get(0).direction = 0;
 		else if (Gdx.input.isKeyPressed(22)) snake.get(0).direction = 1;
@@ -74,6 +78,8 @@ public class Game extends ApplicationAdapter {
 				// generates new segment
 				if (add) {
 					snake.add(new Snake(current.x, current.y, current.direction));
+					score ++;
+					if (score > highScore) highScore++;
 					apple();
 					add = false;
 				}
@@ -82,6 +88,7 @@ public class Game extends ApplicationAdapter {
 					lose();
 					return;
 				}
+
 				// moves snake
 				switch (current.direction) {
 					case 0:
@@ -107,7 +114,6 @@ public class Game extends ApplicationAdapter {
 				}
 				else if (current.x == appleX && current.y == appleY) {
 					add = true;
-
 				}
 			}
 			timer = 10;
@@ -121,12 +127,18 @@ public class Game extends ApplicationAdapter {
 		for (Snake i : snake) {
 			sr.rect(i.x * 20 + 2, i.y * 20 + 2, 18, 18);
 		}
-		sr.end();
+
 		timer --;
 
+		// draws top bar
+		sr.setColor(Color.DARK_GRAY);
+		sr.rect(0, 802, 802, 38);
+		sr.end();
 		batch.begin();
-		font.draw(batch, "hello world", 100, 100);
+		font.draw(batch, "Score : " + score, 5, 833);
+		font.draw(batch, "HighScore : " + highScore, 580, 833);
 		batch.end();
+
 	}
 	
 	@Override
