@@ -3,6 +3,9 @@ package com.snake.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import java.util.ArrayList;
@@ -11,6 +14,8 @@ import java.util.Random;
 public class Game extends ApplicationAdapter {
 
 	ShapeRenderer sr;
+	BitmapFont font;
+	SpriteBatch batch;
 	Random rand = new Random();
 	int timer = 0;
 	int appleX, appleY;
@@ -38,6 +43,9 @@ public class Game extends ApplicationAdapter {
 	@Override
 	public void create () {
 		sr = new ShapeRenderer();
+		font = new BitmapFont(Gdx.files.internal("assets/font.fnt"),
+				Gdx.files.internal("assets/font.png"), false);
+		batch = new SpriteBatch();
 		snake.add(new Snake(2, 20, 1));
 		snake.add(new Snake(1, 20, 1));
 		snake.add(new Snake(0, 20, 1));
@@ -115,10 +123,15 @@ public class Game extends ApplicationAdapter {
 		}
 		sr.end();
 		timer --;
+
+		batch.begin();
+		font.draw(batch, "hello world", 100, 100);
+		batch.end();
 	}
 	
 	@Override
 	public void dispose () {
 		sr.dispose();
+		batch.dispose();
 	}
 }
